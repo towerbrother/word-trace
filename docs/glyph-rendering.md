@@ -1,0 +1,13 @@
+# Glyph Rendering
+
+## Core Data Module: `src/glyphs.js`
+
+All letter shapes come from Hershey Roman Simplex glyph data stored here. The module exports:
+
+- `GLYPHS` — map of character → SVG path `d` string
+- `GLYPH_ENDPOINTS` — start/end stroke points used to render anchor dots in `GlyphCell`
+- `buildPath(rawCoords)` — normalizes raw Hershey coordinates to SVG viewBox space
+
+## SVG Tracing Effect
+
+`GlyphCell.jsx` renders each character as an SVG path with `pathLength="100"`. The difficulty level controls `stroke-dasharray` — higher difficulty means less of the stroke is visible (more gap), so the child has more to trace themselves. The `difficultyToDashArray()` function maps difficulty 1–10 to dash/gap values.
