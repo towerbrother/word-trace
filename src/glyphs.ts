@@ -1,234 +1,226 @@
 /**
- * Hershey Roman Simplex single-stroke glyph data.
- * Each character maps to an SVG path `d` string.
- * Coordinates normalised to fit a 0–100 × 0–100 viewBox.
+ * Single-stroke glyph data for handwriting practice worksheets.
  *
- * Raw Hershey coordinate space: x ≈ -13..13, y ≈ -12..9 (y negative = up).
- * Normalisation: x_norm = (x + 13) / 26 * 80 + 10
- *                y_norm = (y + 12) / 21 * 80 + 10
+ * Uppercase letters follow Handwriting Without Tears (HWT) stroke rules:
+ *   - All capitals start from the top-left or top
+ *   - Built from Big Lines, Little Lines, Big Curves, Little Curves
+ *   - Coordinates normalised to a 0–100 × 0–100 viewBox (10pt margin)
+ *
+ * Digits (0–9) retain their original Hershey Roman Simplex paths, normalised
+ * with the same formula: nx = (x+13)/26*80+10, ny = (y+12)/21*80+10.
  *
  * Each path uses pathLength="100" on the <path> element (set in GlyphCell).
  */
 
 export type GlyphEndpoint = { cx: string; cy: string }
 
-// Helper: normalise a raw Hershey coordinate pair to 0–100 viewBox
-function nx(x: number): string { return ((x + 13) / 26 * 80 + 10).toFixed(1); }
-function ny(y: number): string { return ((y + 12) / 21 * 80 + 10).toFixed(1); }
-
-// Build an SVG path `d` string from an array of strokes.
-// Each stroke is an array of [x, y] raw-coordinate pairs.
-function buildPath(strokes: [number, number][][]): string {
-  return strokes
-    .map(stroke => {
-      const pts = stroke.map(([x, y]) => `${nx(x)},${ny(y)}`);
-      return 'M ' + pts[0] + (pts.length > 1 ? ' L ' + pts.slice(1).join(' L ') : '');
-    })
-    .join(' ');
-}
+// Internal shape: d = SVG path string, e = [cx,cy] pairs (start+end per stroke)
+type E = [string, string]
+type GlyphEntry = { d: string; e: E[] }
 
 // ---------------------------------------------------------------------------
-// Hershey Roman Simplex coordinate data
-// Raw [x, y] pairs per stroke; multiple strokes = pen-up between them.
+// Uppercase HWT letters
+// Working space: x 10–90, y 10–90 (full height = 10→90, mid = 50)
 // ---------------------------------------------------------------------------
-const RAW: Record<string, [number, number][][]> = {
-  // A – two legs + crossbar
-  'A': [
-    [[-5, 9], [0, -12], [5, 9]],
-    [[-3, 3], [3, 3]]
-  ],
-  // B – vertical + two bumps right
-  'B': [
-    [[-5, -12], [-5, 9]],
-    [[-5, -12], [1, -12], [4, -9], [4, -5], [1, -2], [-5, -2]],
-    [[-5, -2], [1, -2], [4, 1], [4, 5], [1, 9], [-5, 9]]
-  ],
-  // C – open arc left
-  'C': [
-    [[5, -8], [3, -11], [0, -12], [-2, -12], [-5, -9], [-5, 9/2], [-5, 6], [-2, 9], [0, 9], [3, 8], [5, 5]]
-  ],
-  // D – vertical + right arc
-  'D': [
-    [[-5, -12], [-5, 9]],
-    [[-5, -12], [0, -12], [3, -9], [5, -5], [5, 2], [3, 6], [0, 9], [-5, 9]]
-  ],
-  // E – vertical + three horizontals
-  'E': [
-    [[-5, -12], [-5, 9]],
-    [[-5, -12], [5, -12]],
-    [[-5, -2], [2, -2]],
-    [[-5, 9], [5, 9]]
-  ],
-  // F – vertical + two horizontals (no bottom)
-  'F': [
-    [[-5, -12], [-5, 9]],
-    [[-5, -12], [5, -12]],
-    [[-5, -2], [2, -2]]
-  ],
-  // G – C-shape + inward horizontal
-  'G': [
-    [[5, -8], [3, -11], [0, -12], [-2, -12], [-5, -9], [-5, 6], [-2, 9], [0, 9], [3, 8], [5, 5], [5, 0], [0, 0]]
-  ],
+const LETTER_DATA: Record<string, GlyphEntry> = {
+  // A – two diagonals from apex + crossbar at mid
+  'A': {
+    d: 'M 50,10 L 10,90 M 50,10 L 90,90 M 30,50 L 70,50',
+    e: [['50','10'],['10','90'], ['50','10'],['90','90'], ['30','50'],['70','50']],
+  },
+  // B – vertical + top bump + bottom bump
+  'B': {
+    d: 'M 10,10 L 10,90 M 10,10 L 50,10 L 60,20 L 60,40 L 50,50 L 10,50 M 10,50 L 55,50 L 65,60 L 65,80 L 55,90 L 10,90',
+    e: [['10','10'],['10','90'], ['10','10'],['10','50'], ['10','50'],['10','90']],
+  },
+  // C – open arc, starts top-right, ends bottom-right
+  'C': {
+    d: 'M 80,20 L 65,10 L 50,10 L 30,15 L 15,30 L 10,50 L 15,70 L 30,85 L 50,90 L 65,90 L 80,80',
+    e: [['80','20'],['80','80']],
+  },
+  // D – vertical + right arc closing back
+  'D': {
+    d: 'M 10,10 L 10,90 M 10,10 L 40,10 L 60,20 L 75,40 L 75,60 L 60,80 L 40,90 L 10,90',
+    e: [['10','10'],['10','90'], ['10','10'],['10','90']],
+  },
+  // E – vertical + top, mid, bottom horizontals
+  'E': {
+    d: 'M 10,10 L 10,90 M 10,10 L 70,10 M 10,50 L 55,50 M 10,90 L 70,90',
+    e: [['10','10'],['10','90'], ['10','10'],['70','10'], ['10','50'],['55','50'], ['10','90'],['70','90']],
+  },
+  // F – vertical + top and mid horizontals (no bottom)
+  'F': {
+    d: 'M 10,10 L 10,90 M 10,10 L 70,10 M 10,50 L 55,50',
+    e: [['10','10'],['10','90'], ['10','10'],['70','10'], ['10','50'],['55','50']],
+  },
+  // G – C-shape + inward horizontal shelf
+  'G': {
+    d: 'M 80,20 L 65,10 L 50,10 L 30,15 L 15,30 L 10,50 L 15,70 L 30,85 L 50,90 L 65,90 L 80,80 L 80,50 L 50,50',
+    e: [['80','20'],['50','50']],
+  },
   // H – two verticals + crossbar
-  'H': [
-    [[-5, -12], [-5, 9]],
-    [[5, -12], [5, 9]],
-    [[-5, -2], [5, -2]]
-  ],
+  'H': {
+    d: 'M 10,10 L 10,90 M 90,10 L 90,90 M 10,50 L 90,50',
+    e: [['10','10'],['10','90'], ['90','10'],['90','90'], ['10','50'],['90','50']],
+  },
   // I – single vertical
-  'I': [
-    [[0, -12], [0, 9]]
-  ],
-  // J – top-right vertical descending into hook left
-  'J': [
-    [[3, -12], [3, 6], [1, 9], [-1, 9], [-3, 6], [-3, 3]]
-  ],
-  // K – vertical + two diagonals
-  'K': [
-    [[-5, -12], [-5, 9]],
-    [[5, -12], [-5, -2]],
-    [[-5, -2], [5, 9]]   // corrected: starts at junction
-  ],
+  'I': {
+    d: 'M 50,10 L 50,90',
+    e: [['50','10'],['50','90']],
+  },
+  // J – vertical descending into hook left
+  'J': {
+    d: 'M 70,10 L 70,75 L 65,85 L 50,90 L 35,85 L 30,75 L 30,65',
+    e: [['70','10'],['30','65']],
+  },
+  // K – vertical + two diagonals meeting at mid
+  'K': {
+    d: 'M 10,10 L 10,90 M 70,10 L 10,50 M 10,50 L 70,90',
+    e: [['10','10'],['10','90'], ['70','10'],['10','50'], ['10','50'],['70','90']],
+  },
   // L – vertical + bottom horizontal
-  'L': [
-    [[-5, -12], [-5, 9]],
-    [[-5, 9], [5, 9]]
-  ],
-  // M – two legs + V in middle
-  'M': [
-    [[-6, -12], [-6, 9]],
-    [[-6, -12], [0, 0], [6, -12]],
-    [[6, -12], [6, 9]]
-  ],
+  'L': {
+    d: 'M 10,10 L 10,90 M 10,90 L 70,90',
+    e: [['10','10'],['10','90'], ['10','90'],['70','90']],
+  },
+  // M – two outer verticals + inner V descending to baseline
+  'M': {
+    d: 'M 10,10 L 10,90 M 10,10 L 50,90 L 90,10 M 90,10 L 90,90',
+    e: [['10','10'],['10','90'], ['10','10'],['90','10'], ['90','10'],['90','90']],
+  },
   // N – two verticals + diagonal
-  'N': [
-    [[-5, -12], [-5, 9]],
-    [[-5, -12], [5, 9]],
-    [[5, -12], [5, 9]]
-  ],
-  // O – oval
-  'O': [
-    [[-1, -12], [-4, -11], [-6, -8], [-6, 0], [-4, 6], [-1, 9],
-     [1, 9], [4, 6], [6, 0], [6, -8], [4, -11], [1, -12], [-1, -12]]
-  ],
+  'N': {
+    d: 'M 10,10 L 10,90 M 10,10 L 90,90 M 90,10 L 90,90',
+    e: [['10','10'],['10','90'], ['10','10'],['90','90'], ['90','10'],['90','90']],
+  },
+  // O – closed oval
+  'O': {
+    d: 'M 50,10 L 25,15 L 10,30 L 10,70 L 25,85 L 50,90 L 75,85 L 90,70 L 90,30 L 75,15 L 50,10',
+    e: [['50','10'],['50','10']],
+  },
   // P – vertical + top bump
-  'P': [
-    [[-5, -12], [-5, 9]],
-    [[-5, -12], [1, -12], [4, -9], [4, -5], [1, -2], [-5, -2]]
-  ],
-  // Q – O + diagonal tail
-  'Q': [
-    [[-1, -12], [-4, -11], [-6, -8], [-6, 0], [-4, 6], [-1, 9],
-     [1, 9], [4, 6], [6, 0], [6, -8], [4, -11], [1, -12], [-1, -12]],
-    [[1, 3], [6, 9]]
-  ],
-  // R – vertical + bump + leg
-  'R': [
-    [[-5, -12], [-5, 9]],
-    [[-5, -12], [1, -12], [4, -9], [4, -5], [1, -2], [-5, -2]],
-    [[-5, -2], [5, 9]]
-  ],  // corrected: leg from junction
+  'P': {
+    d: 'M 10,10 L 10,90 M 10,10 L 50,10 L 65,20 L 65,40 L 50,50 L 10,50',
+    e: [['10','10'],['10','90'], ['10','10'],['10','50']],
+  },
+  // Q – oval + diagonal tail
+  'Q': {
+    d: 'M 50,10 L 25,15 L 10,30 L 10,70 L 25,85 L 50,90 L 75,85 L 90,70 L 90,30 L 75,15 L 50,10 M 60,70 L 85,90',
+    e: [['50','10'],['50','10'], ['60','70'],['85','90']],
+  },
+  // R – vertical + top bump + diagonal leg
+  'R': {
+    d: 'M 10,10 L 10,90 M 10,10 L 50,10 L 65,20 L 65,40 L 50,50 L 10,50 M 10,50 L 70,90',
+    e: [['10','10'],['10','90'], ['10','10'],['10','50'], ['10','50'],['70','90']],
+  },
   // S – reverse-C top + C bottom
-  'S': [
-    [[5, -9], [3, -12], [0, -12], [-3, -9], [-3, -5], [0, -2], [3, 2], [3, 6], [0, 9], [-3, 6]]
-  ],
+  'S': {
+    d: 'M 80,20 L 65,10 L 45,10 L 20,20 L 20,45 L 50,50 L 80,55 L 80,80 L 55,90 L 35,90 L 20,80',
+    e: [['80','20'],['20','80']],
+  },
   // T – top horizontal + vertical
-  'T': [
-    [[0, -12], [0, 9]],
-    [[-6, -12], [6, -12]]
-  ],
-  // U – two verticals curving to bottom
-  'U': [
-    [[-5, -12], [-5, 3], [-3, 8], [0, 9], [3, 8], [5, 3], [5, -12]]
-  ],
-  // V – two diagonals meeting at bottom
-  'V': [
-    [[-6, -12], [0, 9], [6, -12]]
-  ],
-  // W – four legs / double V
-  'W': [
-    [[-7, -12], [-4, 9], [0, -2], [4, 9], [7, -12]]
-  ],
+  'T': {
+    d: 'M 50,10 L 50,90 M 10,10 L 90,10',
+    e: [['50','10'],['50','90'], ['10','10'],['90','10']],
+  },
+  // U – two verticals curving to baseline
+  'U': {
+    d: 'M 10,10 L 10,70 L 20,85 L 50,90 L 80,85 L 90,70 L 90,10',
+    e: [['10','10'],['90','10']],
+  },
+  // V – two diagonals meeting at baseline
+  'V': {
+    d: 'M 10,10 L 50,90 L 90,10',
+    e: [['10','10'],['90','10']],
+  },
+  // W – double-V
+  'W': {
+    d: 'M 10,10 L 28,90 L 50,50 L 72,90 L 90,10',
+    e: [['10','10'],['90','10']],
+  },
   // X – two crossing diagonals
-  'X': [
-    [[-5, -12], [5, 9]],
-    [[5, -12], [-5, 9]]
-  ],
-  // Y – two diagonals meeting midpoint + stem down
-  'Y': [
-    [[-5, -12], [0, -2]],
-    [[5, -12], [0, -2]],
-    [[0, -2], [0, 9]]
-  ],
+  'X': {
+    d: 'M 10,10 L 90,90 M 90,10 L 10,90',
+    e: [['10','10'],['90','90'], ['90','10'],['10','90']],
+  },
+  // Y – two diagonals to mid + stem down
+  'Y': {
+    d: 'M 10,10 L 50,50 M 90,10 L 50,50 M 50,50 L 50,90',
+    e: [['10','10'],['50','50'], ['90','10'],['50','50'], ['50','50'],['50','90']],
+  },
   // Z – top horizontal + diagonal + bottom horizontal
-  'Z': [
-    [[-5, -12], [5, -12]],
-    [[5, -12], [-5, 9]],
-    [[-5, 9], [5, 9]]
-  ],
-
-  // Digits
-  // 0 – oval with diagonal slash
-  '0': [
-    [[-1, -12], [-4, -11], [-6, -8], [-6, 0], [-4, 6], [-1, 9],
-     [1, 9], [4, 6], [6, 0], [6, -8], [4, -11], [1, -12], [-1, -12]],
-    [[-4, -8], [4, 5]]
-  ],
-  // 1 – serif top + vertical
-  '1': [
-    [[-2, -8], [0, -12], [0, 9]]
-  ],
-  // 2 – top arc + diagonal + bottom horizontal
-  '2': [
-    [[-4, -9], [-2, -12], [1, -12], [4, -9], [4, -6], [0, -2], [-5, 9], [5, 9]]
-  ],
-  // 3 – two C-bumps right
-  '3': [
-    [[-4, -12], [4, -12], [0, -4], [3, -1], [4, 2], [4, 5], [2, 8], [-1, 9], [-4, 8]]
-  ],
-  // 4 – vertical descending + cross horizontal
-  '4': [
-    [[2, -12], [2, 9]],
-    [[-5, -2], [6, -2]],
-    [[-5, -2], [2, -12]]
-  ],
-  // 5 – top horizontal + vertical arm + C bottom
-  '5': [
-    [[4, -12], [-4, -12], [-4, -2], [-1, -4], [2, -4], [5, -1], [5, 5], [2, 8], [-1, 9], [-4, 7]]
-  ],
-  // 6 – curved top + circle bottom
-  '6': [
-    [[4, -9], [2, -12], [-1, -12], [-4, -9], [-5, -4], [-5, 4], [-3, 8], [0, 9], [2, 9], [5, 7], [5, 3], [2, 0], [-1, 0], [-4, 2], [-5, 4]]
-  ],
-  // 7 – top horizontal + diagonal
-  '7': [
-    [[-5, -12], [5, -12], [0, 9]]
-  ],
-  // 8 – two stacked circles
-  '8': [
-    [[-1, -12], [-4, -10], [-4, -6], [-1, -3], [2, -3], [5, -1], [5, 5], [2, 9], [-1, 9], [-4, 7], [-4, 2], [-1, -3]],
-    [[-1, -3], [2, -6], [2, -10], [-1, -12]]
-  ],
-  // 9 – circle top + curved tail down
-  '9': [
-    [[4, -3], [5, -6], [5, -9], [3, -12], [0, -12], [-3, -10], [-4, -7], [-4, -4], [-2, -1], [1, 0], [4, 0], [5, -3], [5, 3], [3, 8], [0, 9], [-2, 8]]
-  ],
+  'Z': {
+    d: 'M 10,10 L 90,10 M 90,10 L 10,90 M 10,90 L 90,90',
+    e: [['10','10'],['90','10'], ['90','10'],['10','90'], ['10','90'],['90','90']],
+  },
 };
 
-// Build the exported GLYPHS map
+// ---------------------------------------------------------------------------
+// Digits – Hershey Roman Simplex paths pre-normalised
+// nx = (x+13)/26*80+10  ny = (y+12)/21*80+10
+// ---------------------------------------------------------------------------
+const DIGIT_DATA: Record<string, GlyphEntry> = {
+  // 0 – oval + diagonal slash
+  '0': {
+    d: 'M 46.9,10.0 L 37.7,13.8 L 31.5,25.2 L 31.5,55.7 L 37.7,78.6 L 46.9,90.0 L 53.1,90.0 L 62.3,78.6 L 68.5,55.7 L 68.5,25.2 L 62.3,13.8 L 53.1,10.0 L 46.9,10.0 M 37.7,25.2 L 62.3,74.8',
+    e: [['46.9','10.0'],['46.9','10.0'], ['37.7','25.2'],['62.3','74.8']],
+  },
+  // 1 – serif top + vertical
+  '1': {
+    d: 'M 43.8,25.2 L 50.0,10.0 L 50.0,90.0',
+    e: [['43.8','25.2'],['50.0','90.0']],
+  },
+  // 2 – top arc + diagonal + bottom horizontal
+  '2': {
+    d: 'M 37.7,21.4 L 43.8,10.0 L 53.1,10.0 L 62.3,21.4 L 62.3,32.9 L 50.0,48.1 L 34.6,90.0 L 65.4,90.0',
+    e: [['37.7','21.4'],['65.4','90.0']],
+  },
+  // 3 – two C-bumps right
+  '3': {
+    d: 'M 37.7,10.0 L 62.3,10.0 L 50.0,40.5 L 59.2,44.3 L 62.3,59.5 L 62.3,74.8 L 56.2,86.2 L 46.9,90.0 L 37.7,86.2',
+    e: [['37.7','10.0'],['37.7','86.2']],
+  },
+  // 4 – vertical + cross horizontal + diagonal arm
+  '4': {
+    d: 'M 56.2,10.0 L 56.2,90.0 M 34.6,48.1 L 68.5,48.1 M 34.6,48.1 L 56.2,10.0',
+    e: [['56.2','10.0'],['56.2','90.0'], ['34.6','48.1'],['68.5','48.1'], ['34.6','48.1'],['56.2','10.0']],
+  },
+  // 5 – top horizontal + vertical arm + C bottom
+  '5': {
+    d: 'M 62.3,10.0 L 37.7,10.0 L 37.7,48.1 L 46.9,40.5 L 56.2,40.5 L 65.4,44.3 L 65.4,74.8 L 56.2,86.2 L 46.9,90.0 L 37.7,82.4',
+    e: [['62.3','10.0'],['37.7','82.4']],
+  },
+  // 6 – curved top + circle bottom
+  '6': {
+    d: 'M 62.3,21.4 L 56.2,10.0 L 46.9,10.0 L 37.7,21.4 L 34.6,36.7 L 34.6,63.3 L 40.8,86.2 L 50.0,90.0 L 56.2,90.0 L 65.4,82.4 L 65.4,67.1 L 56.2,55.7 L 46.9,55.7 L 37.7,59.5 L 34.6,63.3',
+    e: [['62.3','21.4'],['34.6','63.3']],
+  },
+  // 7 – top horizontal + diagonal
+  '7': {
+    d: 'M 34.6,10.0 L 65.4,10.0 L 50.0,90.0',
+    e: [['34.6','10.0'],['50.0','90.0']],
+  },
+  // 8 – two stacked circles
+  '8': {
+    d: 'M 46.9,10.0 L 37.7,17.6 L 37.7,32.9 L 46.9,44.3 L 56.2,44.3 L 65.4,51.9 L 65.4,74.8 L 56.2,90.0 L 46.9,90.0 L 37.7,82.4 L 37.7,63.3 L 46.9,44.3 M 46.9,44.3 L 56.2,32.9 L 56.2,17.6 L 46.9,10.0',
+    e: [['46.9','10.0'],['46.9','44.3'], ['46.9','44.3'],['46.9','10.0']],
+  },
+  // 9 – circle top + curved tail
+  '9': {
+    d: 'M 62.3,44.3 L 65.4,32.9 L 65.4,21.4 L 59.2,10.0 L 50.0,10.0 L 40.8,17.6 L 37.7,29.0 L 37.7,40.5 L 43.8,51.9 L 53.1,55.7 L 62.3,55.7 L 65.4,44.3 L 65.4,67.1 L 59.2,86.2 L 50.0,90.0 L 43.8,86.2',
+    e: [['62.3','44.3'],['43.8','86.2']],
+  },
+};
+
+const GLYPH_DATA: Record<string, GlyphEntry> = { ...LETTER_DATA, ...DIGIT_DATA };
+
 export const GLYPHS: Record<string, string> = Object.fromEntries(
-  Object.entries(RAW).map(([char, strokes]) => [char, buildPath(strokes)])
+  Object.entries(GLYPH_DATA).map(([ch, g]) => [ch, g.d])
 );
 
-// For each character, collect the normalised first and last coordinate of every
-// stroke. Used by GlyphCell to render filled anchor dots that are always visible
-// regardless of difficulty / stroke-dasharray phase.
 export const GLYPH_ENDPOINTS: Record<string, GlyphEndpoint[]> = Object.fromEntries(
-  Object.entries(RAW).map(([char, strokes]) => [
-    char,
-    strokes.flatMap(stroke => [
-      { cx: nx(stroke[0][0]),               cy: ny(stroke[0][1]) },
-      { cx: nx(stroke[stroke.length-1][0]), cy: ny(stroke[stroke.length-1][1]) },
-    ])
+  Object.entries(GLYPH_DATA).map(([ch, g]) => [
+    ch,
+    g.e.map(([cx, cy]) => ({ cx, cy })),
   ])
 );
