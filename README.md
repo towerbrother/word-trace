@@ -1,73 +1,52 @@
-# React + TypeScript + Vite
+<div align="center">
+  <h1>Word Trace</h1>
+  <p>
+    Word Trace is a tool for generating printable handwriting practice worksheets. Enter any word or phrase and get a print-ready tracing sheet with adjustable difficulty.
+  </p>
+  <p>
+    <span>
+      <img src="https://img.shields.io/badge/language-TypeScript-3078c6" alt="language">
+    </span>
+    <span>
+      <img src="https://img.shields.io/badge/library-ReactJS-149eca" alt="library">
+    </span>
+    <span>
+      <img src="https://img.shields.io/badge/bundler-Vite-646cff" alt="bundler">
+    </span>
+    <span>
+      <img src="https://img.shields.io/badge/type-frontend-lightgray" alt="type">
+    </span>
+  </p>
+</div>
+<br/>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+Word Trace renders each character as an SVG path using Hershey Roman Simplex glyph data. A difficulty slider (1–10) controls how much of each stroke is pre-drawn — at higher difficulty levels, less of the path is visible and the child has more to trace themselves.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Worksheets are print-optimised: cells are sized in centimetres and all UI chrome is hidden via `@media print`.
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev       # Start dev server with HMR
+npm run build     # Production build → dist/
+npm run preview   # Preview the production build locally
+npm run lint      # ESLint check
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Tech Stack
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **React 19** — component model, JSX
+- **Vite 8** — dev server and bundler (Oxc transform)
+- **TypeScript 6** — type checking (source files use `.jsx`)
+- **ESLint 9** — flat config
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Features
+
+- Preset word lists or free-form custom text input
+- Difficulty slider that adjusts how much of each stroke is visible
+- Config persisted to `localStorage`
+- Print-ready layout sized for A4/letter paper
+- Supports uppercase A–Z and digits 0–9
