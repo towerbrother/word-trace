@@ -30,10 +30,12 @@ Worksheets are print-optimised: cells are sized in centimetres and all UI chrome
 
 ```bash
 npm install
-npm run dev       # Start dev server with HMR
-npm run build     # Production build → dist/
-npm run preview   # Preview the production build locally
-npm run lint      # ESLint check
+npm run dev          # Start dev server with HMR
+npm run build        # Production build → dist/
+npm run preview      # Preview the production build locally
+npm run lint         # ESLint check
+npm test             # Run unit tests (Vitest, single pass)
+npm run test:watch   # Run unit tests in watch mode
 ```
 
 ## Tech Stack

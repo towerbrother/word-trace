@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
+import type { WorksheetConfig } from '../App.tsx'
 
-const PRESETS = {
+const PRESETS: Record<string, string> = {
   alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
   numbers: '0123456789',
 }
@@ -9,7 +10,7 @@ const LS_PRESET     = 'wt_preset'
 const LS_CUSTOM     = 'wt_custom'
 const LS_DIFFICULTY = 'wt_difficulty'
 
-function sanitise(text) {
+export function sanitise(text: string): string {
   // Uppercase, keep only A-Z, 0-9, and spaces
   return text
     .toUpperCase()
@@ -18,7 +19,11 @@ function sanitise(text) {
     .join('')
 }
 
-export default function ConfigPanel({ onGenerate }) {
+interface ConfigPanelProps {
+  onGenerate: (config: WorksheetConfig) => void
+}
+
+export default function ConfigPanel({ onGenerate }: ConfigPanelProps) {
   // Restore from localStorage
   const [preset, setPreset]         = useState(() => localStorage.getItem(LS_PRESET) || 'alphabet')
   const [custom, setCustom]         = useState(() => localStorage.getItem(LS_CUSTOM) || '')
@@ -30,14 +35,14 @@ export default function ConfigPanel({ onGenerate }) {
   // Persist on every change
   useEffect(() => { localStorage.setItem(LS_PRESET, preset) },     [preset])
   useEffect(() => { localStorage.setItem(LS_CUSTOM, custom) },     [custom])
-  useEffect(() => { localStorage.setItem(LS_DIFFICULTY, difficulty) }, [difficulty])
+  useEffect(() => { localStorage.setItem(LS_DIFFICULTY, String(difficulty)) }, [difficulty])
 
-  function handlePresetChange(e) {
+  function handlePresetChange(e: React.ChangeEvent<HTMLSelectElement>) {
     setPreset(e.target.value)
     setCustom('') // clear custom when preset is selected
   }
 
-  function handleCustomChange(e) {
+  function handleCustomChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = sanitise(e.target.value)
     setCustom(val)
     if (val.length > 0) setPreset('') // deselect preset when typing

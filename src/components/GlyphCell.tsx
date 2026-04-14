@@ -1,4 +1,4 @@
-import { GLYPHS, GLYPH_ENDPOINTS } from '../glyphs.js'
+import { GLYPHS, GLYPH_ENDPOINTS } from '../glyphs.ts'
 
 /**
  * Compute stroke-dasharray values on the normalised pathLength=100 scale.
@@ -6,13 +6,18 @@ import { GLYPHS, GLYPH_ENDPOINTS } from '../glyphs.js'
  * difficulty 1  (easiest)  → "8.0 2.0"  (dense dashes, easy to follow)
  * difficulty 10 (hardest)  → "2.0 12.0" (sparse dashes, harder to follow)
  */
-function getDashArray(difficulty) {
+export function getDashArray(difficulty: number): string {
   const dash = 8 - (difficulty - 1) * (6 / 9)   // 8 → 2
   const gap  = 2 + (difficulty - 1) * (10 / 9)   // 2 → 12
   return `${dash.toFixed(1)} ${gap.toFixed(1)}`
 }
 
-export default function GlyphCell({ char, difficulty }) {
+interface GlyphCellProps {
+  char: string
+  difficulty: number
+}
+
+export default function GlyphCell({ char, difficulty }: GlyphCellProps) {
   // Blank cell for space character
   if (char === ' ') {
     return <div className="glyph-cell glyph-cell--blank" aria-hidden="true" />

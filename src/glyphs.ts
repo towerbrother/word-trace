@@ -10,13 +10,15 @@
  * Each path uses pathLength="100" on the <path> element (set in GlyphCell).
  */
 
+export type GlyphEndpoint = { cx: string; cy: string }
+
 // Helper: normalise a raw Hershey coordinate pair to 0–100 viewBox
-function nx(x) { return ((x + 13) / 26 * 80 + 10).toFixed(1); }
-function ny(y) { return ((y + 12) / 21 * 80 + 10).toFixed(1); }
+function nx(x: number): string { return ((x + 13) / 26 * 80 + 10).toFixed(1); }
+function ny(y: number): string { return ((y + 12) / 21 * 80 + 10).toFixed(1); }
 
 // Build an SVG path `d` string from an array of strokes.
 // Each stroke is an array of [x, y] raw-coordinate pairs.
-function buildPath(strokes) {
+function buildPath(strokes: [number, number][][]): string {
   return strokes
     .map(stroke => {
       const pts = stroke.map(([x, y]) => `${nx(x)},${ny(y)}`);
@@ -29,7 +31,7 @@ function buildPath(strokes) {
 // Hershey Roman Simplex coordinate data
 // Raw [x, y] pairs per stroke; multiple strokes = pen-up between them.
 // ---------------------------------------------------------------------------
-const RAW = {
+const RAW: Record<string, [number, number][][]> = {
   // A – two legs + crossbar
   'A': [
     [[-5, 9], [0, -12], [5, 9]],
@@ -214,14 +216,14 @@ const RAW = {
 };
 
 // Build the exported GLYPHS map
-export const GLYPHS = Object.fromEntries(
+export const GLYPHS: Record<string, string> = Object.fromEntries(
   Object.entries(RAW).map(([char, strokes]) => [char, buildPath(strokes)])
 );
 
 // For each character, collect the normalised first and last coordinate of every
 // stroke. Used by GlyphCell to render filled anchor dots that are always visible
 // regardless of difficulty / stroke-dasharray phase.
-export const GLYPH_ENDPOINTS = Object.fromEntries(
+export const GLYPH_ENDPOINTS: Record<string, GlyphEndpoint[]> = Object.fromEntries(
   Object.entries(RAW).map(([char, strokes]) => [
     char,
     strokes.flatMap(stroke => [

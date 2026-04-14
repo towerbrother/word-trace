@@ -1,16 +1,26 @@
 import { useState } from 'react'
-import GlyphCell from './GlyphCell.jsx'
+import GlyphCell from './GlyphCell.tsx'
+import type { WorksheetConfig } from '../App.tsx'
 
 const LS_DIFFICULTY = 'wt_difficulty'
 
-// How many cells per row on the printed worksheet
-export default function Worksheet({ config, onBack }) {
+// Split text into rows of characters: each space-separated word becomes one row.
+export function splitIntoRows(text: string): string[][] {
+  return text.split(' ').filter(w => w.length > 0).map(w => w.split(''))
+}
+
+interface WorksheetProps {
+  config: WorksheetConfig
+  onBack: () => void
+}
+
+export default function Worksheet({ config, onBack }: WorksheetProps) {
   const [difficulty, setDifficulty] = useState(config.difficulty)
 
-  function handleDifficultyChange(e) {
+  function handleDifficultyChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = Number(e.target.value)
     setDifficulty(val)
-    localStorage.setItem(LS_DIFFICULTY, val)
+    localStorage.setItem(LS_DIFFICULTY, String(val))
   }
 
   function handlePrint() {
@@ -20,7 +30,7 @@ export default function Worksheet({ config, onBack }) {
   // Each word becomes its own row. A space always forces a new row.
   // No artificial character-count chunking — CSS handles wrapping on screen,
   // and print CSS uses flex-wrap: nowrap to keep each word on one line.
-  const rows = config.text.split(' ').filter(w => w.length > 0).map(w => w.split(''))
+  const rows = splitIntoRows(config.text)
 
   return (
     <div className="worksheet-page">

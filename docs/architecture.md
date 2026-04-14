@@ -14,3 +14,16 @@ Word Trace is a React SPA with two views, managed by a `currentView` state varia
 ## Input Sanitization
 
 Custom text entered in `ConfigPanel` is filtered to uppercase A–Z, 0–9, and spaces before being stored or rendered. Characters outside this set have no glyph and are silently skipped.
+
+## Tests
+
+Unit tests live next to their source file:
+
+| Test file | Covers |
+|---|---|
+| `src/components/ConfigPanel.test.js` | `sanitise` — upcasing, symbol stripping, space preservation |
+| `src/components/GlyphCell.test.jsx` | `getDashArray` — boundaries, monotonicity, format; component rendering |
+| `src/components/Worksheet.test.js` | `splitIntoRows` — word splitting, edge cases |
+| `src/glyphs.test.js` | `GLYPHS` / `GLYPH_ENDPOINTS` — completeness, format, viewBox bounds |
+
+Run all tests with `npm test`.
