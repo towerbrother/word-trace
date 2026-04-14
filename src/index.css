@@ -166,7 +166,7 @@ body {
   color: #c4bad8;
 }
 
-/* Difficulty slider */
+/* Range slider (cell size) */
 .slider-row {
   display: flex;
   align-items: center;
@@ -185,7 +185,7 @@ body {
   text-align: right;
 }
 
-.difficulty-slider {
+.size-slider {
   flex: 1;
   -webkit-appearance: none;
   appearance: none;
@@ -196,7 +196,7 @@ body {
   cursor: pointer;
 }
 
-.difficulty-slider::-webkit-slider-thumb {
+.size-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 22px;
@@ -209,11 +209,11 @@ body {
   transition: transform 0.1s;
 }
 
-.difficulty-slider::-webkit-slider-thumb:active {
+.size-slider::-webkit-slider-thumb:active {
   transform: scale(1.2);
 }
 
-.difficulty-slider::-moz-range-thumb {
+.size-slider::-moz-range-thumb {
   width: 22px;
   height: 22px;
   border-radius: 50%;
@@ -323,32 +323,6 @@ body {
 
 .print-btn:hover { background: var(--color-accent-h); border-color: var(--color-accent-h); }
 
-/* Difficulty bar on worksheet */
-.difficulty-bar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 10px 24px;
-  background: var(--color-bg);
-  border-bottom: 1px solid var(--color-border);
-  flex-wrap: wrap;
-}
-
-.ws-difficulty-label {
-  font-size: 0.9rem;
-  color: var(--color-muted);
-  white-space: nowrap;
-}
-
-.ws-difficulty-label strong {
-  color: var(--color-accent);
-}
-
-.difficulty-bar .slider-row {
-  flex: 1;
-  min-width: 200px;
-}
-
 /* Grid */
 .worksheet-grid {
   display: flex;
@@ -363,10 +337,10 @@ body {
   gap: 12px;
 }
 
-/* Individual glyph cell */
+/* Individual glyph cell — dimensions driven by --cell-w / --cell-h on .worksheet-page */
 .glyph-cell {
-  width: 110px;
-  height: 92px;
+  width: var(--cell-w, 110px);
+  height: var(--cell-h, 92px);
   border: 1.5px solid #ddd5f0;
   border-radius: var(--radius-sm);
   background: #fff;
@@ -398,7 +372,6 @@ body {
   /* Hide all controls */
   .no-print,
   .worksheet-nav,
-  .difficulty-bar,
   .back-btn,
   .print-btn,
   .config-page {
@@ -426,19 +399,19 @@ body {
 
   .worksheet-row {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 4mm;
-    page-break-inside: avoid;
-    break-inside: avoid;
   }
 
-  /* Cells: fixed print size */
+  /* Cells: size from --cell-print-w / --cell-print-h set inline on .worksheet-page */
   .glyph-cell {
-    width: 3cm;
-    height: 2.5cm;
+    width: var(--cell-print-w, 3.2cm);
+    height: var(--cell-print-h, 2.7cm);
     border: 1px solid #ccc;
     border-radius: 0;
     background: #fff;
+    break-inside: avoid;
+    flex-shrink: 0;
   }
 
   .glyph-cell--blank {

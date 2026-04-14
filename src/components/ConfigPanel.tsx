@@ -8,7 +8,9 @@ const PRESETS: Record<string, string> = {
 
 const LS_PRESET     = 'wt_preset'
 const LS_CUSTOM     = 'wt_custom'
-const LS_DIFFICULTY = 'wt_difficulty'
+const LS_CELL_SIZE  = 'wt_cell_size'
+
+const CELL_SIZE_LABELS = ['XS', 'S', 'M', 'L', 'XXL']
 
 export function sanitise(text: string): string {
   // Uppercase, keep only A-Z, 0-9, and spaces
@@ -25,17 +27,17 @@ interface ConfigPanelProps {
 
 export default function ConfigPanel({ onGenerate }: ConfigPanelProps) {
   // Restore from localStorage
-  const [preset, setPreset]         = useState(() => localStorage.getItem(LS_PRESET) || 'alphabet')
-  const [custom, setCustom]         = useState(() => localStorage.getItem(LS_CUSTOM) || '')
-  const [difficulty, setDifficulty] = useState(() => {
-    const saved = localStorage.getItem(LS_DIFFICULTY)
-    return saved ? Number(saved) : 5
+  const [preset, setPreset]       = useState(() => localStorage.getItem(LS_PRESET) || 'alphabet')
+  const [custom, setCustom]       = useState(() => localStorage.getItem(LS_CUSTOM) || '')
+  const [cellSize, setCellSize]   = useState(() => {
+    const saved = localStorage.getItem(LS_CELL_SIZE)
+    return saved ? Number(saved) : 3
   })
 
   // Persist on every change
-  useEffect(() => { localStorage.setItem(LS_PRESET, preset) },     [preset])
-  useEffect(() => { localStorage.setItem(LS_CUSTOM, custom) },     [custom])
-  useEffect(() => { localStorage.setItem(LS_DIFFICULTY, String(difficulty)) }, [difficulty])
+  useEffect(() => { localStorage.setItem(LS_PRESET, preset) },              [preset])
+  useEffect(() => { localStorage.setItem(LS_CUSTOM, custom) },              [custom])
+  useEffect(() => { localStorage.setItem(LS_CELL_SIZE, String(cellSize)) }, [cellSize])
 
   function handlePresetChange(e: React.ChangeEvent<HTMLSelectElement>) {
     setPreset(e.target.value)
@@ -51,7 +53,7 @@ export default function ConfigPanel({ onGenerate }: ConfigPanelProps) {
   function handleGenerate() {
     const text = custom.length > 0 ? custom : (PRESETS[preset] || '')
     if (!text.trim().replace(/ /g, '')) return // nothing to render
-    onGenerate({ text, difficulty })
+    onGenerate({ text, cellSize })
   }
 
   const canGenerate = custom.length > 0 || preset !== ''
@@ -108,28 +110,28 @@ export default function ConfigPanel({ onGenerate }: ConfigPanelProps) {
           )}
         </div>
 
-        {/* Difficulty slider */}
+        {/* Cell size slider */}
         <div className="field-group">
-          <label className="field-label" htmlFor="difficulty-slider">
-            Difficulty: <strong>{difficulty}</strong>
+          <label className="field-label" htmlFor="size-slider">
+            Cell Size: <strong>{CELL_SIZE_LABELS[cellSize - 1]}</strong>
           </label>
           <div className="slider-row">
-            <span className="slider-label-left">More guides</span>
+            <span className="slider-label-left">Smaller</span>
             <input
-              id="difficulty-slider"
+              id="size-slider"
               type="range"
               min="1"
-              max="10"
+              max="5"
               step="1"
-              value={difficulty}
-              onChange={e => setDifficulty(Number(e.target.value))}
-              className="difficulty-slider"
+              value={cellSize}
+              onChange={e => setCellSize(Number(e.target.value))}
+              className="size-slider"
             />
-            <span className="slider-label-right">Fewer guides</span>
+            <span className="slider-label-right">Larger</span>
           </div>
           <div className="slider-ticks" aria-hidden="true">
-            {Array.from({ length: 10 }, (_, i) => (
-              <span key={i} className={`tick${difficulty === i + 1 ? ' active' : ''}`}>{i + 1}</span>
+            {CELL_SIZE_LABELS.map((label, i) => (
+              <span key={i} className={`tick${cellSize === i + 1 ? ' active' : ''}`}>{label}</span>
             ))}
           </div>
         </div>

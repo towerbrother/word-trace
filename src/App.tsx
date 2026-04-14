@@ -4,7 +4,7 @@ import Worksheet from './components/Worksheet.tsx'
 
 export interface WorksheetConfig {
   text: string
-  difficulty: number
+  cellSize: number  // 1 (XS) – 5 (XXL)
 }
 
 export default function App() {

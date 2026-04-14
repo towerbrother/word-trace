@@ -1,23 +1,14 @@
-import { GLYPHS, GLYPH_ENDPOINTS } from '../glyphs.ts'
+import { GLYPHS } from '../glyphs.ts'
 
-/**
- * Compute stroke-dasharray values on the normalised pathLength=100 scale.
- *
- * difficulty 1  (easiest)  → "8.0 2.0"  (dense dashes, easy to follow)
- * difficulty 10 (hardest)  → "2.0 12.0" (sparse dashes, harder to follow)
- */
-export function getDashArray(difficulty: number): string {
-  const dash = 8 - (difficulty - 1) * (6 / 9)   // 8 → 2
-  const gap  = 2 + (difficulty - 1) * (10 / 9)   // 2 → 12
-  return `${dash.toFixed(1)} ${gap.toFixed(1)}`
-}
+// Hardcoded level-4 dash/gap on the pathLength=100 scale.
+// gap = 3 + (4-1) * (12/9) = 7.0  → moderate guide spacing
+const DASH_ARRAY = '0.0 7.0'
 
 interface GlyphCellProps {
   char: string
-  difficulty: number
 }
 
-export default function GlyphCell({ char, difficulty }: GlyphCellProps) {
+export default function GlyphCell({ char }: GlyphCellProps) {
   // Blank cell for space character
   if (char === ' ') {
     return <div className="glyph-cell glyph-cell--blank" aria-hidden="true" />
@@ -50,21 +41,18 @@ export default function GlyphCell({ char, difficulty }: GlyphCellProps) {
           strokeWidth="0.8"
           strokeDasharray="2 3"
         />
-        {/* The tracing path */}
+        {/* The tracing path — dots at level-4 spacing, slightly dimmed for difficulty */}
         <path
           d={pathData}
           pathLength="100"
           stroke="#333"
           strokeWidth="4"
           fill="none"
-          strokeDasharray={getDashArray(difficulty)}
+          strokeDasharray={DASH_ARRAY}
+          strokeOpacity={0.55}
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        {/* Stroke endpoint markers — anchor dots always visible at stroke boundaries */}
-        {GLYPH_ENDPOINTS[char].map(({ cx, cy }, i) => (
-          <circle key={i} cx={cx} cy={cy} r="2" fill="#333" />
-        ))}
         {/* Character label */}
         <text
           x="88"
