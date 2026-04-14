@@ -1,4 +1,4 @@
-import { GLYPHS } from '../glyphs.ts'
+import { GLYPHS, GLYPH_ENDPOINTS } from '../glyphs.ts'
 
 // Hardcoded level-4 dash/gap on the pathLength=100 scale.
 // gap = 3 + (4-1) * (12/9) = 7.0  → moderate guide spacing
@@ -53,6 +53,10 @@ export default function GlyphCell({ char }: GlyphCellProps) {
           strokeLinecap="round"
           strokeLinejoin="round"
         />
+        {/* Stroke endpoint markers */}
+        {GLYPH_ENDPOINTS[char].map(({ cx, cy }, i) => (
+          <circle key={i} cx={cx} cy={cy} r="2" fill="#333" fillOpacity={0.55} />
+        ))}
         {/* Character label */}
         <text
           x="88"
