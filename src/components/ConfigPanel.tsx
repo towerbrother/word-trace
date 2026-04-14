@@ -9,6 +9,7 @@ const PRESETS: Record<string, string> = {
 const LS_PRESET     = 'wt_preset'
 const LS_CUSTOM     = 'wt_custom'
 const LS_CELL_SIZE  = 'wt_cell_size'
+const LS_OPACITY    = 'wt_opacity'
 
 const CELL_SIZE_LABELS = ['XS', 'S', 'M', 'L', 'XXL']
 
@@ -33,11 +34,16 @@ export default function ConfigPanel({ onGenerate }: ConfigPanelProps) {
     const saved = localStorage.getItem(LS_CELL_SIZE)
     return saved ? Number(saved) : 3
   })
+  const [opacity, setOpacity]     = useState(() => {
+    const saved = localStorage.getItem(LS_OPACITY)
+    return saved ? Number(saved) : 0.55
+  })
 
   // Persist on every change
   useEffect(() => { localStorage.setItem(LS_PRESET, preset) },              [preset])
   useEffect(() => { localStorage.setItem(LS_CUSTOM, custom) },              [custom])
   useEffect(() => { localStorage.setItem(LS_CELL_SIZE, String(cellSize)) }, [cellSize])
+  useEffect(() => { localStorage.setItem(LS_OPACITY, String(opacity)) },    [opacity])
 
   function handlePresetChange(e: React.ChangeEvent<HTMLSelectElement>) {
     setPreset(e.target.value)
@@ -53,7 +59,7 @@ export default function ConfigPanel({ onGenerate }: ConfigPanelProps) {
   function handleGenerate() {
     const text = custom.length > 0 ? custom : (PRESETS[preset] || '')
     if (!text.trim().replace(/ /g, '')) return // nothing to render
-    onGenerate({ text, cellSize })
+    onGenerate({ text, cellSize, opacity })
   }
 
   const canGenerate = custom.length > 0 || preset !== ''
@@ -133,6 +139,27 @@ export default function ConfigPanel({ onGenerate }: ConfigPanelProps) {
             {CELL_SIZE_LABELS.map((label, i) => (
               <span key={i} className={`tick${cellSize === i + 1 ? ' active' : ''}`}>{label}</span>
             ))}
+          </div>
+        </div>
+
+        {/* Opacity slider */}
+        <div className="field-group">
+          <label className="field-label" htmlFor="opacity-slider">
+            Opacity: <strong>{Math.round(opacity * 100)}%</strong>
+          </label>
+          <div className="slider-row">
+            <span className="slider-label-left">Faint</span>
+            <input
+              id="opacity-slider"
+              type="range"
+              min="0.2"
+              max="1"
+              step="0.05"
+              value={opacity}
+              onChange={e => setOpacity(Number(e.target.value))}
+              className="size-slider"
+            />
+            <span className="slider-label-right">Dark</span>
           </div>
         </div>
 

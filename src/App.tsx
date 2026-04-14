@@ -5,6 +5,7 @@ import Worksheet from './components/Worksheet.tsx'
 export interface WorksheetConfig {
   text: string
   cellSize: number  // 1 (XS) – 5 (XXL)
+  opacity: number   // 0.2 – 1.0
 }
 
 export default function App() {

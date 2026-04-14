@@ -61,6 +61,7 @@ export default function Worksheet({ config, onBack }: WorksheetProps) {
               <GlyphCell
                 key={`${rowIdx}-${colIdx}`}
                 char={char}
+                opacity={config.opacity}
               />
             ))}
           </div>

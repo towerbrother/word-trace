@@ -6,9 +6,10 @@ const DASH_ARRAY = '0.0 7.0'
 
 interface GlyphCellProps {
   char: string
+  opacity?: number
 }
 
-export default function GlyphCell({ char }: GlyphCellProps) {
+export default function GlyphCell({ char, opacity = 0.55 }: GlyphCellProps) {
   // Blank cell for space character
   if (char === ' ') {
     return <div className="glyph-cell glyph-cell--blank" aria-hidden="true" />
@@ -49,13 +50,13 @@ export default function GlyphCell({ char }: GlyphCellProps) {
           strokeWidth="4"
           fill="none"
           strokeDasharray={DASH_ARRAY}
-          strokeOpacity={0.55}
+          strokeOpacity={opacity}
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         {/* Stroke endpoint markers */}
         {GLYPH_ENDPOINTS[char].map(({ cx, cy }, i) => (
-          <circle key={i} cx={cx} cy={cy} r="2" fill="#333" fillOpacity={0.55} />
+          <circle key={i} cx={cx} cy={cy} r="2" fill="#333" fillOpacity={opacity} />
         ))}
         {/* Character label */}
         <text
