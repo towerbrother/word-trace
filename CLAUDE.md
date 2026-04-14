@@ -19,6 +19,11 @@ Word Trace is a React SPA that generates printable handwriting practice workshee
 - [Glyph rendering](docs/glyph-rendering.md) — `glyphs.ts` data module, SVG tracing effect
 - [Print layout](docs/print-layout.md) — `@media print` rules, physical sizing warnings
 
+## Git Commits
+
+- Never mention the AI assistant in commit messages
+- Never add `Co-Authored-By` or similar attribution lines
+
 ## Tech Stack
 
 - React 19 (TSX/TS files)
