@@ -1,0 +1,458 @@
+/* ============================================================
+   Word Trace — Global Styles
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --color-bg:       #faf9fc;
+  --color-surface:  #ffffff;
+  --color-border:   #e2dced;
+  --color-text:     #2d2640;
+  --color-muted:    #8878a6;
+  --color-accent:   #6c3fc5;
+  --color-accent-h: #5530a0;
+  --color-danger:   #e05050;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  --shadow-card: 0 2px 12px rgba(108, 63, 197, 0.08),
+                 0 1px 3px  rgba(0,   0,   0, 0.06);
+
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-bg);
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================================
+   CONFIG PAGE
+   ============================================================ */
+.config-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 16px 60px;
+  gap: 24px;
+}
+
+.config-header {
+  text-align: center;
+}
+
+.app-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  margin: 0 0 6px;
+  letter-spacing: -0.5px;
+}
+
+.app-subtitle {
+  color: var(--color-muted);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.config-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 32px;
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ============================================================
+   FORM FIELDS
+   ============================================================ */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.field-hint {
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+.field-hint-below {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+/* Preset buttons */
+.preset-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.preset-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.preset-btn:hover {
+  border-color: var(--color-accent);
+  background: #f3ecff;
+  color: var(--color-accent);
+}
+
+.preset-btn.active {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* Custom text input */
+.custom-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 1.1rem;
+  font-family: inherit;
+  letter-spacing: 0.05em;
+  color: var(--color-text);
+  background: var(--color-surface);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.custom-input:focus {
+  border-color: var(--color-accent);
+}
+
+.custom-input::placeholder {
+  color: #c4bad8;
+}
+
+/* Difficulty slider */
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.slider-label-left,
+.slider-label-right {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  white-space: nowrap;
+  min-width: 72px;
+}
+
+.slider-label-right {
+  text-align: right;
+}
+
+.difficulty-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--color-accent), #c4a0f0);
+  outline: none;
+  cursor: pointer;
+}
+
+.difficulty-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(108, 63, 197, 0.4);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.difficulty-slider::-webkit-slider-thumb:active {
+  transform: scale(1.2);
+}
+
+.difficulty-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(108, 63, 197, 0.4);
+  cursor: pointer;
+}
+
+.slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.tick {
+  font-size: 0.72rem;
+  color: #c4bad8;
+  width: 20px;
+  text-align: center;
+}
+
+.tick.active {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+/* Generate button */
+.generate-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.generate-btn:hover:not(:disabled) {
+  background: var(--color-accent-h);
+  transform: translateY(-1px);
+}
+
+.generate-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.generate-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   WORKSHEET PAGE
+   ============================================================ */
+.worksheet-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Nav bar */
+.worksheet-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.worksheet-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.back-btn,
+.print-btn {
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.back-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+
+.print-btn {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+.print-btn:hover { background: var(--color-accent-h); border-color: var(--color-accent-h); }
+
+/* Difficulty bar on worksheet */
+.difficulty-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 24px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+.ws-difficulty-label {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.ws-difficulty-label strong {
+  color: var(--color-accent);
+}
+
+.difficulty-bar .slider-row {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* Grid */
+.worksheet-grid {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 16px;
+}
+
+.worksheet-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Individual glyph cell */
+.glyph-cell {
+  width: 110px;
+  height: 92px;
+  border: 1.5px solid #ddd5f0;
+  border-radius: var(--radius-sm);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.glyph-cell--blank {
+  border: 1.5px dashed #e8e2f5;
+  background: #fdfcff;
+}
+
+.glyph-cell--unknown {
+  border-color: var(--color-danger);
+}
+
+.glyph-fallback {
+  font-size: 2rem;
+  color: var(--color-muted);
+}
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+@media print {
+  /* Hide all controls */
+  .no-print,
+  .worksheet-nav,
+  .difficulty-bar,
+  .back-btn,
+  .print-btn,
+  .config-page {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    margin: 0;
+    padding: 0;
+  }
+
+  #root {
+    min-height: unset;
+  }
+
+  .worksheet-page {
+    display: block;
+  }
+
+  .worksheet-grid {
+    padding: 8mm;
+    gap: 6mm;
+  }
+
+  .worksheet-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4mm;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Cells: fixed print size */
+  .glyph-cell {
+    width: 3cm;
+    height: 2.5cm;
+    border: 1px solid #ccc;
+    border-radius: 0;
+    background: #fff;
+  }
+
+  .glyph-cell--blank {
+    border: 1px dashed #ddd;
+    background: #fff;
+  }
+
+  /* Hide hint labels inside SVG on print — keep strokes */
+  svg text {
+    display: none;
+  }
+
+  /* Ensure paths print clearly */
+  path {
+    stroke: #333 !important;
+  }
+}
